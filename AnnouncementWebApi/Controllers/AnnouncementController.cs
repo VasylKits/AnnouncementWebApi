@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using Microsoft.AspNetCore.Components;
+﻿using AnnouncementWebApi.Models;
 using Microsoft.AspNetCore.Mvc;
-using RouteAttribute = Microsoft.AspNetCore.Components.RouteAttribute;
-using AnnouncementWebApi;
+using System;
+using System.Collections.Generic;
 
 namespace AnnouncementWebApi.Controllers
 {

@@ -1,7 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 
-namespace AnnouncementWebApi
+namespace AnnouncementWebApi.Models
 {
     public class Announcement
     {
