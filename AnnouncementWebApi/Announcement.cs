@@ -7,18 +7,22 @@ namespace AnnouncementWebApi
     {
         public int Id { get; set; }
         public string Title { get; set; }
-        public int Description { get; set; }
+        public string Description { get; set; }
         public DateTime CreatedDate { get; set; }
 
-        public AddedAnnouncement AddAnnouncement()
+        public AddedAnnouncement AddAnnouncement(int id, string title, string description, DateTime createdDate)
         {
-            return new AddedAnnouncement()
-            {
-                IdAdded = Id,
-                TitleAdded = Title,
-                DescriptionAdded = Description,
-                CreatedDateAdded = CreatedDate
-            };
+            AddedAnnouncement newAnn = new() { Id = id, Title = title, Description = description, CreatedDate = createdDate };
+            return newAnn;
+        }
+
+        public Announcement EditAnnouncement(Announcement announcement)
+        {
+            return announcement;
+        }
+        public Announcement DeleteAnnouncement(Announcement announcement)
+        {
+            return announcement;
         }
     }
 }
