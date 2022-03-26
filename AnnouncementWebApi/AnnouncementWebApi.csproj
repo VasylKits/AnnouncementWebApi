@@ -11,7 +11,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="DB\" />
     <Folder Include="DTOs\" />
     <Folder Include="Services\Interfaces\" />
     <Folder Include="Services\Implementations\" />
