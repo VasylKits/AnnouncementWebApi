@@ -21,33 +21,10 @@ namespace AnnouncementWebApi.Controllers
 
         private static List<Announcement> announcements = new List<Announcement>(new[]
         {
-            new Announcement() {Id = 1, Title = "First announcement", Description = "Something in announcement, ets....", CreatedDate = DateTime.Now},
-            new Announcement() {Id = 2, Title = "Second announce", Description = "This is a different from other each", CreatedDate = DateTime.Now},
-            new Announcement() {Id = 3, Title = "Third announcement", Description = "Something in announcement, ets....", CreatedDate = DateTime.Now},
-            new Announcement() {Id = 4, Title = "Fourth announcement", Description = "Somet in announce, ets....", CreatedDate = DateTime.Now},
-        });  
-        async Task AddAnnouncement(HttpResponse response, HttpRequest request)
-    {
-        try
-        {
-            // получаем данные пользователя
-            var announcement = await request.ReadFromJsonAsync<Announcement>();
-            if (announcement != null)
-            {
-                // добавляем пользователя в список
-                announcements.Add(announcement);
-                await response.WriteAsJsonAsync(announcement);
-            }
-            else
-            {
-                throw new Exception("Некорректные данные");
-            }
-        }
-        catch (Exception)
-        {
-            response.StatusCode = 400;
-            await response.WriteAsJsonAsync(new { message = "Некорректные данные" });
-        }
+            new Announcement() { Id = 1, Title = "First announcement", Description = "Something in announcement, ets....", CreatedDate = DateTime.Now },
+            new Announcement() { Id = 2, Title = "Second announce", Description = "This is a different from other each", CreatedDate = DateTime.Now },
+            new Announcement() { Id = 3, Title = "Third announcement", Description = "Something in announcement, ets....", CreatedDate = DateTime.Now },
+            new Announcement() { Id = 4, Title = "Fourth announcement", Description = "Somet in announce, ets....", CreatedDate = DateTime.Now },
+        });
     }
-}
 }
