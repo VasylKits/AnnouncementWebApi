@@ -1,10 +1,6 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Collections.Generic;
-using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Mvc;
-using RouteAttribute = Microsoft.AspNetCore.Components.RouteAttribute;
-using AnnouncementWebApi;
-using System.Threading.Tasks;
 using System.Linq;
 
 namespace AnnouncementWebApi.Controllers
