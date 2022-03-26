@@ -5,12 +5,13 @@ using Microsoft.AspNetCore.Mvc;
 using RouteAttribute = Microsoft.AspNetCore.Components.RouteAttribute;
 using AnnouncementWebApi;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
+using System.Linq;
 
 namespace AnnouncementWebApi.Controllers
 {
     [ApiController]
     [Route("[controller]")]
+
     public class AnnouncementController : ControllerBase
     {
         // в контролерах методи - прочитати в метаніті, які є типи повернень і атрибути для них
@@ -26,5 +27,16 @@ namespace AnnouncementWebApi.Controllers
             new Announcement() { Id = 3, Title = "Third announcement", Description = "Something in announcement, ets....", CreatedDate = DateTime.Now },
             new Announcement() { Id = 4, Title = "Fourth announcement", Description = "Somet in announce, ets....", CreatedDate = DateTime.Now },
         });
+
+        [HttpGet("{id}")]
+        public IActionResult Get(int id)
+        {
+            var announcement = announcements.SingleOrDefault(a => a.Id == id);
+            if(announcement == null)
+            {
+                return NotFound();
+            }
+            return Ok(announcement);
+        }
     }
 }
