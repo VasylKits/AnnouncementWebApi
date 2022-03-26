@@ -11,12 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="MySql.Data">
-      <HintPath>..\..\..\..\..\..\Program Files (x86)\MySQL\MySQL Connector Net 8.0.28\Assemblies\net5.0\MySql.Data.dll</HintPath>
-    </Reference>
-  </ItemGroup>
-
-  <ItemGroup>
+    <Folder Include="DB\" />
     <Folder Include="DTOs\" />
     <Folder Include="Services\Interfaces\" />
     <Folder Include="Services\Implementations\" />
