@@ -44,6 +44,7 @@ namespace AnnouncementWebApi.Controllers
             throw new NotImplementedException();
         }
 
+        // Delete item
         [HttpDelete("{id}")]
         public IActionResult DeleteAnnouncement(int id)
         {
