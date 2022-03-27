@@ -1,10 +1,6 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Collections.Generic;
-using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Mvc;
-using RouteAttribute = Microsoft.AspNetCore.Components.RouteAttribute;
-using AnnouncementWebApi;
-using System.Threading.Tasks;
 using System.Linq;
 
 namespace AnnouncementWebApi.Controllers
@@ -28,11 +24,30 @@ namespace AnnouncementWebApi.Controllers
             new Announcement() { Id = 4, Title = "Fourth announcement", Description = "Somet in announce, ets....", CreatedDate = DateTime.Now },
         });
 
+        //public Announcement AddAnnouncement(NewAnnouncement newAnnoucement)
+        //{
+        //    //Announcement newAnn = new() { Id = id, Title = title, Description = description, CreatedDate = createdDate };
+        //    return new Announcement();
+        //}
+
+        //public Announcement EditAnnouncement(Announcement announcement)
+        //{
+        //    return announcement;
+        //}
+        //public Announcement DeleteAnnouncement(Announcement announcement)
+        //{
+        //    return announcement;
+        //}
+        //public List<Announcement> GetList()
+        //{
+        //    return announcements;
+        //}
+
         [HttpGet("{id}")]
         public IActionResult Get(int id)
         {
             var announcement = announcements.SingleOrDefault(a => a.Id == id);
-            if(announcement == null)
+            if (announcement == null)
             {
                 return NotFound();
             }
