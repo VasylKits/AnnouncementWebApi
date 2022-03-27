@@ -35,8 +35,7 @@ namespace AnnouncementWebApi.Controllers
         {
             //Announcement newAnn = new() { Id = id, Title = title, Description = description, CreatedDate = createdDate };
             //announcements.Add(newAnn);
-            //return newAnn;
-            throw new NotImplementedException();
+            return new ObjectResult(new Announcement { Id = id, Title = title, Description = description, CreatedDate = createdDate });
         }
 
         public IActionResult EditAnnouncement(Announcement announcement)
