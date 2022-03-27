@@ -17,7 +17,7 @@ namespace AnnouncementWebApi.Controllers
         // в імплемент має бути реалізація методів() EditAnnoun, AddAn, DelAnn..
         // GitHub  і контролери
 
-        private static List<Announcement> announcements = new List<Announcement>(new[]
+        private static List<Announcement> announcements = new List<Announcement>(new[] 
         {
             new Announcement() { Id = 1, Title = "First announcement", Description = "Something in announcement, ets....", CreatedDate = DateTime.Now },
             new Announcement() { Id = 2, Title = "Second announce", Description = "This is a different from other each", CreatedDate = DateTime.Now },
@@ -47,9 +47,12 @@ namespace AnnouncementWebApi.Controllers
         }
 
         [HttpGet]
-        public IActionResult GetList()
+        public IActionResult GetAllAnnouncement()
         {
-            return Ok(announcements);
+            if (announcements.Count > 0)
+                return Ok(announcements);
+            else
+                return BadRequest();
         }
 
         [HttpGet("{id}")]
