@@ -30,7 +30,7 @@ namespace AnnouncementWebApi.Controllers
         //    return new() { Id = newAnnouncement.Id, Title = newAnnouncement.Title, Description = newAnnouncement.Description, CreatedDate = newAnnouncement.CreatedDate };
         //}
 
-        //[Route("Name")]
+        [Route("Name")]
         [HttpPost("{id}, {title}, {description}, {createdDate}")]
         public IActionResult AddAnnouncement(int id, string title, string description, DateTime createdDate)
         {
