@@ -1,10 +1,6 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Collections.Generic;
-using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Mvc;
-using RouteAttribute = Microsoft.AspNetCore.Components.RouteAttribute;
-using AnnouncementWebApi;
-using System.Threading.Tasks;
 using System.Linq;
 
 namespace AnnouncementWebApi.Controllers
@@ -28,11 +24,43 @@ namespace AnnouncementWebApi.Controllers
             new Announcement() { Id = 4, Title = "Fourth announcement", Description = "Somet in announce, ets....", CreatedDate = DateTime.Now },
         });
 
+        //[HttpPost("{id}, {title}, {description}, {createdDate}")]
+        //public Announcement AddAnnouncement(NewAnnouncement newAnnouncement)
+        //{
+        //    return new() { Id = newAnnouncement.Id, Title = newAnnouncement.Title, Description = newAnnouncement.Description, CreatedDate = newAnnouncement.CreatedDate };
+        //}
+
+        [HttpPost("{id}, {title}, {description}, {createdDate}")]
+        public IActionResult AddAnnouncement(int id, string title, string description, DateTime createdDate)
+        {
+            //Announcement newAnn = new() { Id = id, Title = title, Description = description, CreatedDate = createdDate };
+            //announcements.Add(newAnn);
+            //return newAnn;
+            throw new NotImplementedException();
+        }
+
+        public IActionResult EditAnnouncement(Announcement announcement)
+        {
+            throw new NotImplementedException();
+        }
+
+        [HttpDelete("{id}")]
+        public IActionResult DeleteAnnouncement(int id)
+        {
+            throw new NotImplementedException();
+        }
+
+        [HttpGet]
+        public IActionResult GetList()
+        {
+            return Ok(announcements);
+        }
+
         [HttpGet("{id}")]
         public IActionResult Get(int id)
         {
             var announcement = announcements.SingleOrDefault(a => a.Id == id);
-            if(announcement == null)
+            if (announcement == null)
             {
                 return NotFound();
             }
