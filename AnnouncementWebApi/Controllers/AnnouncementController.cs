@@ -31,31 +31,30 @@ namespace AnnouncementWebApi.Controllers
         //}
 
         [HttpPost("{id}, {title}, {description}, {createdDate}")]
-        public Announcement AddAnnouncement(int id, string title, string description, DateTime createdDate)
+        public IActionResult AddAnnouncement(int id, string title, string description, DateTime createdDate)
         {
             //Announcement newAnn = new() { Id = id, Title = title, Description = description, CreatedDate = createdDate };
             //announcements.Add(newAnn);
             //return newAnn;
-            return new Announcement();
+            throw new NotImplementedException();
         }
 
-        public Announcement EditAnnouncement(Announcement announcement)
+        public IActionResult EditAnnouncement(Announcement announcement)
         {
-            return announcement;
+            throw new NotImplementedException();
         }
 
         [HttpDelete("{id}")]
-        public Announcement DeleteAnnouncement(int id)
+        public IActionResult DeleteAnnouncement(int id)
         {
-            return new Announcement();
+            throw new NotImplementedException();
         }
 
         [HttpGet]
-        public List<Announcement> GetList()
+        public IActionResult GetList()
         {
-            return announcements;
+            return Ok(announcements);
         }
-
 
         [HttpGet("{id}")]
         public IActionResult Get(int id)
