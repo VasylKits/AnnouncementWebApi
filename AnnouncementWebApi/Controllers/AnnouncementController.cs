@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using AnnouncementWebApi.Models;
+using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,25 +24,19 @@ namespace AnnouncementWebApi.Controllers
             new Announcement() { Id = 3, Title = "Third announcement", Description = "Something in announcement, ets....", CreatedDate = DateTime.Now },
             new Announcement() { Id = 4, Title = "Fourth announcement", Description = "Somet in announce, ets....", CreatedDate = DateTime.Now },
         });
-
-        //[HttpPost("{id}, {title}, {description}, {createdDate}")]
-        //public Announcement AddAnnouncement(NewAnnouncement newAnnouncement)
-        //{
-        //    return new() { Id = newAnnouncement.Id, Title = newAnnouncement.Title, Description = newAnnouncement.Description, CreatedDate = newAnnouncement.CreatedDate };
-        //}
-
-        [Route("Name")]
-        [HttpPost("{id}, {title}, {description}, {createdDate}")]
-        public IActionResult AddAnnouncement(int id, string title, string description, DateTime createdDate)
+  
+        [HttpPost]
+        public IActionResult AddAnnouncement([FromBody]NewAnnouncement newAnnouncement)
         {
-            //Announcement newAnn = new() { Id = id, Title = title, Description = description, CreatedDate = createdDate };
-            //announcements.Add(newAnn);
-            return new ObjectResult(new Announcement { Id = id, Title = title, Description = description, CreatedDate = createdDate });
+            Announcement newAnn = new() { Id = newAnnouncement.Id, Title = newAnnouncement.Title, Description = newAnnouncement.Description };
+            announcements.Add(newAnn);
+            return Ok(newAnn); //new ObjectResult(new Announcement { Id = id, Title = title, Description = description, CreatedDate = createdDate });
         }
 
-        public IActionResult EditAnnouncement(Announcement announcement)
+        [HttpPut]
+        public IActionResult EditAnnouncement(EditAnnouncement editAnnouncement)
         {
-            throw new NotImplementedException();
+            return Ok("edit");
         }
 
         // Delete item
