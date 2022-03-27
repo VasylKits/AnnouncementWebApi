@@ -2,7 +2,7 @@
 
 namespace AnnouncementWebApi.Models
 {
-    public class DeleteAnnoucemente
+    public class DelAnnouncement
     {
         public int Id { get; set; }
         public string Title { get; set; }

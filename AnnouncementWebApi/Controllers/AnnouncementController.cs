@@ -24,24 +24,38 @@ namespace AnnouncementWebApi.Controllers
             new Announcement() { Id = 4, Title = "Fourth announcement", Description = "Somet in announce, ets....", CreatedDate = DateTime.Now },
         });
 
-        //public Announcement AddAnnouncement(NewAnnouncement newAnnoucement)
+        //[HttpPost("{id}, {title}, {description}, {createdDate}")]
+        //public Announcement AddAnnouncement(NewAnnouncement newAnnouncement)
         //{
-        //    //Announcement newAnn = new() { Id = id, Title = title, Description = description, CreatedDate = createdDate };
-        //    return new Announcement();
+        //    return new() { Id = newAnnouncement.Id, Title = newAnnouncement.Title, Description = newAnnouncement.Description, CreatedDate = newAnnouncement.CreatedDate };
         //}
 
-        //public Announcement EditAnnouncement(Announcement announcement)
-        //{
-        //    return announcement;
-        //}
-        //public Announcement DeleteAnnouncement(Announcement announcement)
-        //{
-        //    return announcement;
-        //}
-        //public List<Announcement> GetList()
-        //{
-        //    return announcements;
-        //}
+        [HttpPost("{id}, {title}, {description}, {createdDate}")]
+        public Announcement AddAnnouncement(int id, string title, string description, DateTime createdDate)
+        {
+            //Announcement newAnn = new() { Id = id, Title = title, Description = description, CreatedDate = createdDate };
+            //announcements.Add(newAnn);
+            //return newAnn;
+            return new Announcement();
+        }
+
+        public Announcement EditAnnouncement(Announcement announcement)
+        {
+            return announcement;
+        }
+
+        [HttpDelete("{id}")]
+        public Announcement DeleteAnnouncement(int id)
+        {
+            return new Announcement();
+        }
+
+        [HttpGet]
+        public List<Announcement> GetList()
+        {
+            return announcements;
+        }
+
 
         [HttpGet("{id}")]
         public IActionResult Get(int id)
