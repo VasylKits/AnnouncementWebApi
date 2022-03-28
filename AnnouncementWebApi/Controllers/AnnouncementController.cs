@@ -34,8 +34,10 @@ namespace AnnouncementWebApi.Controllers
         }
 
         [HttpPut]
-        public IActionResult EditAnnouncement(EditAnnouncement editAnnouncement)
+        public IActionResult EditAnnouncement([FromBody]EditAnnouncement editAnnouncement)
         {
+            //Announcement editAnn = announcements.SingleOrDefault(a => a.Id == editAnnouncement.Id);
+            //editAnn = new() { Title = editAnnouncement.Description, Description = editAnnouncement.Description };
             return Ok("edit");
         }
 
@@ -61,7 +63,7 @@ namespace AnnouncementWebApi.Controllers
         }
 
         [HttpGet("{id}")]
-        public IActionResult GetId(int id)
+        public IActionResult GetById(int id)
         {
             var announcement = announcements.SingleOrDefault(a => a.Id == id);
             if (announcement == null)
@@ -72,12 +74,9 @@ namespace AnnouncementWebApi.Controllers
         }
 
         [HttpGet("TOP")]
-        public IActionResult ShopTopThreeAnnouncements()
+        public IActionResult ShowTopThreeAnnouncements()
         {
-            var result = from a in announcements
-                         where a.Title.Contains("announcement")
-                         orderby a.Id
-                         select a;
+            var result = announcements.Where(a => a.Title.Contains("announcement"));
                 return Ok(result);
         }
     }
