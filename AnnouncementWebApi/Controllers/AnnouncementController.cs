@@ -34,9 +34,20 @@ namespace AnnouncementWebApi.Controllers
         }
 
         [HttpPut]
-        public IActionResult EditAnnouncement(EditAnnouncement editAnnouncement)
+        public IActionResult EditAnnouncement([FromBody]EditAnnouncement editAnnouncement)
         {
-            return Ok("edit");
+            var editAnn = announcements.SingleOrDefault(a => a.Id == editAnnouncement.Id);
+            if (editAnn == null)
+            {
+                return NotFound();
+            }
+            {
+                editAnn.Title = editAnnouncement.Title;
+                editAnn.Description = editAnnouncement.Description;
+                editAnn.EditDate = DateTime.Now;
+                return Ok(editAnn);
+            }
+//            return Ok(editAnn);
         }
 
         // Delete item
@@ -61,7 +72,7 @@ namespace AnnouncementWebApi.Controllers
         }
 
         [HttpGet("{id}")]
-        public IActionResult GetId(int id)
+        public IActionResult GetById(int id)
         {
             var announcement = announcements.SingleOrDefault(a => a.Id == id);
             if (announcement == null)
@@ -72,13 +83,9 @@ namespace AnnouncementWebApi.Controllers
         }
 
         [HttpGet("TOP")]
-        public IActionResult ShopTopThreeAnnouncements()
+        public IActionResult ShowTopThreeAnnouncements()
         {
-            var result = from a in announcements
-                         where a.Title.Contains("announcement")
-                         orderby a.Id
-                         select a;
-                return Ok(result);
+            return Ok(announcements.Where(a => a.Title.Contains("announcement")).OrderBy(a => a.Id).Take(3));
         }
     }
 }
