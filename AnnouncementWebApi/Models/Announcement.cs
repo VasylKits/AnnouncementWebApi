@@ -13,7 +13,7 @@ namespace AnnouncementWebApi
         public Announcement()
         {
             CreatedDate = DateTime.Now;
-            EditDate = DateTime.Now;
+            EditDate = null;
         }
     }
 }

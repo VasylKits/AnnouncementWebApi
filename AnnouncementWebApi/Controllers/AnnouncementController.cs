@@ -44,6 +44,7 @@ namespace AnnouncementWebApi.Controllers
             {
                 editAnn.Title = editAnnouncement.Title;
                 editAnn.Description = editAnnouncement.Description;
+                editAnn.EditDate = DateTime.Now;
                 return Ok(editAnn);
             }
 //            return Ok(editAnn);
@@ -84,8 +85,7 @@ namespace AnnouncementWebApi.Controllers
         [HttpGet("TOP")]
         public IActionResult ShowTopThreeAnnouncements()
         {
-            var result = announcements.Where(a => a.Title.Contains("announcement")).GroupBy(a => a.Id);
-                return Ok(result);
+            return Ok(announcements.Where(a => a.Title.Contains("announcement")).OrderBy(a => a.Id).Take(3));
         }
     }
 }
