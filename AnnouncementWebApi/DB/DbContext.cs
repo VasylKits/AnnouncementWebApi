@@ -1,6 +1,7 @@
-﻿namespace AnnouncementWebApi.DB
+﻿using Microsoft.EntityFrameworkCore;
+namespace AnnouncementWebApi.DB
 {
-    public class DbContext
-    {
-    }
+    //public class DbContext
+    //{
+    //}
 }
