@@ -1,9 +1,11 @@
 ﻿using AnnouncementWebApi.DB;
 using AnnouncementWebApi.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace AnnouncementWebApi.Controllers
 {
@@ -27,50 +29,10 @@ namespace AnnouncementWebApi.Controllers
         //    new Announcement() { Id = 4, Title = "Fourth announcement", Description = "Somet in announce, ets....", CreatedDate = DateTime.Now },
         //});
 
-        [HttpPost]
-        public IActionResult AddAnnouncement([FromBody] NewAnnouncement newAnnouncement)
-        {
-            Announcement newAnn = new() { Id = newAnnouncement.Id, Title = newAnnouncement.Title, Description = newAnnouncement.Description };
-            _myDbContext.Add(newAnn);
-            return Ok(newAnn);
-        }
-
-        [HttpPut]
-        public IActionResult EditAnnouncement([FromBody]EditAnnouncement editAnnouncement)
-        {
-            var editAnn = _myDbContext.Announcements.SingleOrDefault(a => a.Id == editAnnouncement.Id);
-            if (editAnn == null)
-            {
-                return NotFound();
-            }
-            {
-                editAnn.Title = editAnnouncement.Title;
-                editAnn.Description = editAnnouncement.Description;
-                editAnn.EditDate = DateTime.Now;
-                return Ok(editAnn);
-            }
-//            return Ok(editAnn);
-        }
-
-        // Delete item
-        [HttpDelete]
-        public IActionResult DeleteAnnouncement(int id)
-        {
-            var delAnnouncement = _myDbContext.Announcements.SingleOrDefault(a => a.Id == id);
-            if (delAnnouncement == null)
-            {
-                return NotFound();
-            }
-            _myDbContext.Announcements.Remove(delAnnouncement);
-            return Ok($"Announcement with id={id} was deleted!");
-        }
-
         [HttpGet]
         public IActionResult GetAllAnnouncement()
         {
-            //if ((_myDbContext.Announcements).Count > 0)
-                return Ok(_myDbContext.Announcements);
-            //return BadRequest();
+            return Ok(_myDbContext.Announcements.ToList());
         }
 
         [HttpGet("{id}")]
@@ -82,6 +44,72 @@ namespace AnnouncementWebApi.Controllers
                 return NotFound();
             }
             return Ok(announcement);
+        }
+
+        [HttpPost]
+        public IActionResult AddAnnouncement([FromBody] NewAnnouncement newAnnouncement)
+        {
+            Announcement newAnn = new() { Id = newAnnouncement.Id, Title = newAnnouncement.Title, Description = newAnnouncement.Description };
+            _myDbContext.Announcements.Add(newAnn);
+
+            try
+            {
+                _myDbContext.SaveChanges();
+            }
+            catch
+            {
+                throw new Exception();
+            }
+            //return CreatedAtAction("GetAllAnnouncement", newAnn);
+            return Ok(newAnn);
+        }
+
+        [HttpPut]
+        public IActionResult EditAnnouncement([FromBody] EditAnnouncement editAnnouncement)
+        {
+            var editAnn = _myDbContext.Announcements.SingleOrDefault(a => a.Id == editAnnouncement.Id);
+            if (editAnn == null)
+            {
+                return BadRequest();
+            }
+
+            _myDbContext.Entry(editAnn).State = EntityState.Modified;
+
+            try
+            {
+                editAnn.Title = editAnnouncement.Title;
+                editAnn.Description = editAnnouncement.Description;
+                editAnn.EditDate = DateTime.Now;
+                _myDbContext.SaveChanges();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                throw;
+            }
+            return Ok(editAnn);
+        }
+
+        [HttpDelete]
+        public IActionResult DeleteAnnouncement(int id)
+        {
+            var delAnnouncement = _myDbContext.Announcements.Find(id);
+
+            if (delAnnouncement == null)
+            {
+                return NotFound();
+            }
+
+            _myDbContext.Announcements.Remove(delAnnouncement);
+
+            try
+            {
+                _myDbContext.SaveChanges();
+            }
+            catch
+            {
+                throw new Exception();
+            }
+            return Ok($"Announcement with id={id} was deleted!");
         }
 
         [HttpGet("TOP")]
