@@ -1,17 +1,14 @@
-﻿using Microsoft.Data.Sqlite;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Sqlite;
-using System.IO;
+﻿using Microsoft.EntityFrameworkCore;
 using System.Reflection;
 
 namespace AnnouncementWebApi.DB
 {
-    public class MyDbContext : DbContext
+    public class DatabaseContext : DbContext
     {
         public DbSet<Announcement> Announcements { get; set; }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlite("Filename = TestDatabase.db",
+            optionsBuilder.UseSqlite("Filename = AnnouncementsDatabase.db",
                 options =>
                 {
                     options.MigrationsAssembly(Assembly.GetExecutingAssembly().FullName);
