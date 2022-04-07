@@ -17,17 +17,7 @@ namespace AnnouncementWebApi
             Configuration = configuration;
             using var dbContext = new DatabaseContext();
             dbContext.Database.EnsureCreated();
-            if (!dbContext.Announcements.Any())
-            {
-                dbContext.Announcements.AddRange(new Announcement[]
-                {
-                            new Announcement{  Id = 1, Title = "First announcement", Description = "Something in announcement, ets....", CreatedDate = DateTime.Now },
-                            new Announcement() { Id = 2, Title = "Друге announce", Description = "This is a different from other each", CreatedDate = DateTime.Now },
-                            new Announcement() { Id = 3, Title = "Третє announcement", Description = "Something in announcement, ets....", CreatedDate = DateTime.Now },
-                            new Announcement() { Id = 4, Title = "Fourth announcement", Description = "Somet in announce, ets....", CreatedDate = DateTime.Now }
-                });
-                dbContext.SaveChanges();
-            }
+            dbContext.Announcements = null;
         }
 
         public IConfiguration Configuration { get; }
