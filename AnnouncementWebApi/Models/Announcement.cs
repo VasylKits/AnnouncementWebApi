@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 
 namespace AnnouncementWebApi
 {
@@ -10,10 +9,10 @@ namespace AnnouncementWebApi
         public string Description { get; set; }
         public DateTime CreatedDate { get; set; }
         public DateTime? EditDate { get; set; }
+
         public Announcement()
         {
             CreatedDate = DateTime.Now;
-            EditDate = null;
         }
     }
 }
