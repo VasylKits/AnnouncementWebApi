@@ -43,7 +43,7 @@ namespace AnnouncementWebApi.Controllers
             }
             catch (Exception ex)
             {
-                throw new Exception(ex.Message);
+                return BadRequest($"{ex.Message}");
             }
             return Ok(newAnn);
         }
@@ -67,7 +67,7 @@ namespace AnnouncementWebApi.Controllers
             }
             catch (Exception ex)
             {
-                throw new Exception(ex.Message);
+                return BadRequest($"{ex.Message}");
             }
             return Ok(editAnnouncement);
         }

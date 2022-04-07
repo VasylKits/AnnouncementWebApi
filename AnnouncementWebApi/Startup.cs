@@ -4,9 +4,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.OpenApi.Models;
-using System;
-using System.Linq;
+using Microsoft.OpenApi.Models; 
 
 namespace AnnouncementWebApi
 {
@@ -17,7 +15,6 @@ namespace AnnouncementWebApi
             Configuration = configuration;
             using var dbContext = new DatabaseContext();
             dbContext.Database.EnsureCreated();
-            dbContext.Announcements = null;
         }
 
         public IConfiguration Configuration { get; }
