@@ -1,16 +1,17 @@
-﻿using AnnouncementWebApi.Models;
+﻿using AnnouncementWebApi.DTOs;
+using AnnouncementWebApi.Models;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace AnnouncementWebApi.Services.Interfaces
 {
-    public interface IAnnouncementService<AnnouncementResponse>
+    public interface IAnnouncementService
     {
-        Task<List<AnnouncementResponse>> GetAnnouncement();
-        Task<AnnouncementResponse> GetById(int id);
-        Task<AnnouncementResponse> AddAnnouncement(AnnouncementResponse item);
-        Task<AnnouncementResponse> EditAnnouncement(EditAnnouncement editAnnouncement);
-        Task<bool> DeleteAnnouncement(int id);
-        Task<List<AnnouncementResponse>> ShowTopThreeAnnouncements();
+        Task<List<AnnouncementResponse>> GetAnnouncementAsync();
+        Task<AnnouncementResponse> GetByIdAsync(int id);
+        Task<AnnouncementResponse> AddAnnouncementAsync(NewAnnouncement newAnnouncement);
+        Task<AnnouncementResponse> EditAnnouncementAsync(EditAnnouncement editAnnouncement);
+        Task<int?> DeleteAnnouncementAsync(int id);
+        Task<List<AnnouncementResponse>> ShowTopThreeAnnouncementsAsync();
     }
 }
