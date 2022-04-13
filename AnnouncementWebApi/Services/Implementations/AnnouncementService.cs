@@ -12,109 +12,171 @@ namespace AnnouncementWebApi.Services.Implementations
 {
     public class AnnouncementService : IAnnouncementService
     {
-        readonly DatabaseContext _myDbContext;
+        private readonly DatabaseContext _myDbContext;
         public AnnouncementService(DatabaseContext myDbContext)
         {
             _myDbContext = myDbContext;
         }
 
-        public async Task<List<AnnouncementResponse>> GetAnnouncementAsync()
+        public async Task<BaseResponse<List<AnnouncementResponse>>> GetAnnouncementsAsync()
         {
-            var varList = await _myDbContext.Announcements.ToListAsync();
-            var responceList = new List<AnnouncementResponse>();
-            foreach (var item in varList)
+            var baseResponse = new BaseResponse<List<AnnouncementResponse>>();
+            try
             {
-                var announcementResponse = new AnnouncementResponse() {Id = item.Id, Title = item.Title, Description = item.Description, CreatedDate = item.CreatedDate };
-                responceList.Add(announcementResponse);
+                var responseAnnouncementList = new List<AnnouncementResponse>();
+                var announcementList = await _myDbContext.Announcements.ToListAsync();
+                if (announcementList.Count == 0)
+                {
+                    baseResponse.IsError = true;
+                    baseResponse.ErrorMessage = "Announcements list in empty";
+                }
+
+                foreach (var announcement in announcementList)
+                {
+                    var announcementResponse = new AnnouncementResponse() { Id = announcement.Id, Title = announcement.Title, Description = announcement.Description, CreatedDate = announcement.CreatedDate };
+                    responseAnnouncementList.Add(announcementResponse);
+                }
+
+                baseResponse.Response = responseAnnouncementList;
             }
-            return responceList;
+
+            catch (Exception ex)
+            {
+                baseResponse.IsError = true;
+                baseResponse.ErrorMessage = $"[GetAnnouncementAsync] : {ex.Message}";
+            }
+            return baseResponse;
         }
-        public async Task<AnnouncementResponse> GetByIdAsync(int id)
+
+        public async Task<BaseResponse<AnnouncementResponse>> GetByIdAsync(int id)
         {
+            var baseResponse = new BaseResponse<AnnouncementResponse>();
             var announcementResponse = new AnnouncementResponse();
-            var announcement = await _myDbContext.Announcements.FindAsync(id);
-            if (announcement == null)
+            try
             {
-                throw new Exception();
-            }
-            {
+                var announcement = await _myDbContext.Announcements.FindAsync(id);
+                if (announcement == null)
+                {
+                    baseResponse.IsError = true;
+                    baseResponse.ErrorMessage = $"Announcement id = {announcement.Id} not found";
+                }
                 announcementResponse.Id = announcement.Id;
                 announcementResponse.Title = announcement.Title;
                 announcementResponse.Description = announcement.Description;
                 announcementResponse.CreatedDate = announcement.CreatedDate;
+
+                baseResponse.Response = announcementResponse;
             }
-            return announcementResponse;
+            catch (Exception ex)
+            {
+                baseResponse.IsError = true;
+                baseResponse.ErrorMessage = $"[GetByIdAsync] : {ex.Message}";
+            }
+            return baseResponse;
         }
-        public async Task<AnnouncementResponse> AddAnnouncementAsync(NewAnnouncement newAnnouncement)
+
+        public async Task<BaseResponse<AnnouncementResponse>> AddAnnouncementAsync(NewAnnouncement newAnnouncement)
         {
+            var baseResponse = new BaseResponse<AnnouncementResponse>();
+            var announcementResponse = new AnnouncementResponse();
             Announcement newAnn = new() { Title = newAnnouncement.Title, Description = newAnnouncement.Description };
             _myDbContext.Announcements.Add(newAnn);
             try
             {
                 await _myDbContext.SaveChangesAsync();
+                announcementResponse = new AnnouncementResponse() { Id = newAnn.Id, Title = newAnn.Title, Description = newAnn.Description, CreatedDate = newAnn.CreatedDate };
             }
             catch (Exception ex)
             {
-                throw new Exception(message: $"{ex.Message}");
+                baseResponse.IsError = true;
+                baseResponse.ErrorMessage = $"[AddAnnouncementAsync] : {ex.Message}";
             }
-            var announcementResponse = new AnnouncementResponse() { Id = newAnn.Id, Title = newAnn.Title, Description = newAnn.Description, CreatedDate = newAnn.CreatedDate };
-            return announcementResponse;
+            
+            baseResponse.Response = announcementResponse;
+            return baseResponse;
         }
 
-        public async Task<AnnouncementResponse> EditAnnouncementAsync(EditAnnouncement editAnnouncement)
+        public async Task<BaseResponse<AnnouncementResponse>> EditAnnouncementAsync(EditAnnouncement editAnnouncement)
         {
-            AnnouncementResponse announcementResponse = new();
-            var editAnn = await _myDbContext.Announcements.SingleOrDefaultAsync(a => a.Id == editAnnouncement.Id);
-
-            if (editAnn == null)
+            var baseResponse = new BaseResponse<AnnouncementResponse>();
+            try
             {
-                throw new Exception();
-            }
-
-            {
+                var editAnn = await _myDbContext.Announcements.SingleOrDefaultAsync(a => a.Id == editAnnouncement.Id);
+                AnnouncementResponse announcementResponse = new();
+                if (editAnn == null)
+                {
+                    baseResponse.IsError = true;
+                    baseResponse.ErrorMessage = $"Announcement id = {editAnn.Id} not found!";
+                }
                 editAnn.Title = editAnnouncement.Title;
                 editAnn.Description = editAnnouncement.Description;
                 editAnn.EditDate = DateTime.Now;
-            }
 
-            try
-            {
                 await _myDbContext.SaveChangesAsync();
-            }
 
+                announcementResponse.Id = editAnn.Id;
+                announcementResponse.Title = editAnn.Title;
+                announcementResponse.Description = editAnn.Description;
+                announcementResponse.CreatedDate = editAnn.CreatedDate;
+
+                baseResponse.Response = announcementResponse;
+            }
             catch (Exception ex)
             {
-                throw new Exception(message: $"{ex.Message}");
+                baseResponse.IsError = true;
+                baseResponse.ErrorMessage = $"[EditAnnouncementAsync] : {ex.Message}";
             }
-            announcementResponse.Id = editAnn.Id;
-            announcementResponse.Title = editAnn.Title;
-            announcementResponse.Description = editAnn.Description;
-            announcementResponse.CreatedDate = editAnn.CreatedDate;
-            return announcementResponse;
+            return baseResponse;
         }
 
-        public async Task<int?> DeleteAnnouncementAsync(int id)
+        public async Task<BaseResponse<string>> DeleteAnnouncementAsync(int id)
         {
-            var delAnnouncement = _myDbContext.Announcements.SingleOrDefault(a => a.Id == id);
-            if (delAnnouncement == null)
+            var baseResponse = new BaseResponse<string>();
+            try
             {
-                throw new Exception();
+                var delAnnouncement = _myDbContext.Announcements.SingleOrDefault(a => a.Id == id);
+                if (delAnnouncement.Id == null)
+                {
+                    baseResponse.IsError = true;
+                    baseResponse.ErrorMessage = $"Announcement id = {delAnnouncement.Id} not found!";
+                }
+                _myDbContext.Announcements.Remove(delAnnouncement);
+                baseResponse.Response = $"Successful! Announcement with id={id} was deleted!";
+                await _myDbContext.SaveChangesAsync();
             }
-            _myDbContext.Announcements.Remove(delAnnouncement);
-            await _myDbContext.SaveChangesAsync();
-            return id;
+            catch (Exception ex)
+            {
+                baseResponse.IsError = true;
+                baseResponse.ErrorMessage = $"[DeleteAnnouncementAsync] : {ex.Message}";
+            }
+            return baseResponse;
         }
 
-        public async Task<List<AnnouncementResponse>> ShowTopThreeAnnouncementsAsync()
+        public async Task<BaseResponse<List<AnnouncementResponse>>> ShowTopThreeAnnouncementsAsync()
         {
-            var varList = await _myDbContext.Announcements.Where(a => a.Title.Contains("announcement")).OrderBy(a => a.Id).Take(3).ToListAsync();
-            var responceList = new List<AnnouncementResponse>();
-            foreach (var item in varList)
+            var baseResponse = new BaseResponse<List<AnnouncementResponse>>();
+            try
             {
-                var announcementResponse = new AnnouncementResponse() { Id = item.Id, Title = item.Title, Description = item.Description, CreatedDate = item.CreatedDate };
-                responceList.Add(announcementResponse);
+                var varList = await _myDbContext.Announcements.Where(a => a.Title.Contains("announcement")).OrderBy(a => a.Id).Take(3).ToListAsync();
+                if (!varList.Any())
+                {
+                    baseResponse.IsError = true;
+                    baseResponse.ErrorMessage = "No records in database!";
+                }
+                var responceList = new List<AnnouncementResponse>();
+                foreach (var item in varList)
+                {
+                    var announcementResponse = new AnnouncementResponse() { Id = item.Id, Title = item.Title, Description = item.Description, CreatedDate = item.CreatedDate };
+                    responceList.Add(announcementResponse);
+                }
+                baseResponse.Response = responceList;
             }
-            return responceList;
+            catch (Exception ex)
+            {
+                baseResponse.IsError = true;
+                baseResponse.ErrorMessage = $"[ShowTopThreeAnnouncementsAsync] : {ex.Message}";
+            }
+            return baseResponse;
         }
     }
 }

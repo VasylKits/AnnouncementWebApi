@@ -10,7 +10,7 @@ namespace AnnouncementWebApi.Controllers
 
     public class AnnouncementController : ControllerBase
     {
-        readonly IAnnouncementService _announcementService;
+        private readonly IAnnouncementService _announcementService;
 
         public AnnouncementController(IAnnouncementService announcementService)
         {
@@ -20,7 +20,7 @@ namespace AnnouncementWebApi.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAnnouncementsAsync()
         {
-            return Ok(await _announcementService.GetAnnouncementAsync());
+            return Ok(await _announcementService.GetAnnouncementsAsync());
         }
 
         [HttpGet("{id}")]
@@ -44,8 +44,7 @@ namespace AnnouncementWebApi.Controllers
         [HttpDelete]
         public async Task<IActionResult> DeleteAnnouncementAsync(int id)
         {
-            await _announcementService.DeleteAnnouncementAsync(id);
-            return Ok($"Successful!\nAnnouncement with id={id} was deleted!");
+            return Ok(await _announcementService.DeleteAnnouncementAsync(id));
         }
 
         [HttpGet("TOP")]
