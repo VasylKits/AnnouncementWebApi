@@ -135,7 +135,7 @@ namespace AnnouncementWebApi.Services.Implementations
             try
             {
                 var delAnnouncement = _myDbContext.Announcements.SingleOrDefault(a => a.Id == id);
-                if (delAnnouncement.Id == null)
+                if (delAnnouncement.Id != id)
                 {
                     baseResponse.IsError = true;
                     baseResponse.ErrorMessage = $"Announcement id = {delAnnouncement.Id} not found!";
@@ -157,14 +157,14 @@ namespace AnnouncementWebApi.Services.Implementations
             var baseResponse = new BaseResponse<List<AnnouncementResponse>>();
             try
             {
-                var varList = await _myDbContext.Announcements.Where(a => a.Title.Contains("announcement")).OrderBy(a => a.Id).Take(3).ToListAsync();
-                if (!varList.Any())
+                var announcementList = await _myDbContext.Announcements.Where(a => a.Title.Contains("announcement")).OrderBy(a => a.Id).Take(3).ToListAsync();
+                if (!announcementList.Any())
                 {
                     baseResponse.IsError = true;
                     baseResponse.ErrorMessage = "No records in database!";
                 }
                 var responceList = new List<AnnouncementResponse>();
-                foreach (var item in varList)
+                foreach (var item in announcementList)
                 {
                     var announcementResponse = new AnnouncementResponse() { Id = item.Id, Title = item.Title, Description = item.Description, CreatedDate = item.CreatedDate };
                     responceList.Add(announcementResponse);
