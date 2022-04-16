@@ -27,7 +27,9 @@ namespace AnnouncementWebApi.Services.Implementations
                 var announcementList = await _myDbContext.Announcements.ToListAsync();
                 if (announcementList.Count == 0)
                 {
-                    throw new NullReferenceException();
+                    baseResponse.IsError = true;
+                    baseResponse.ErrorMessage = "Error! Database is empty";
+                    return baseResponse;
                 }
 
                 foreach (var announcement in announcementList)
@@ -57,7 +59,9 @@ namespace AnnouncementWebApi.Services.Implementations
                 var announcement = await _myDbContext.Announcements.FindAsync(id);
                 if (announcement == null)
                 {
-                    throw new NullReferenceException();
+                    baseResponse.IsError = true;
+                    baseResponse.ErrorMessage = "Error! Announcement is not found!";
+                    return baseResponse;
                 }
                 announcementResponse.Id = announcement.Id;
                 announcementResponse.Title = announcement.Title;
@@ -105,7 +109,9 @@ namespace AnnouncementWebApi.Services.Implementations
                 AnnouncementResponse announcementResponse = new();
                 if (editAnn == null)
                 {
-                    throw new NullReferenceException();
+                    baseResponse.IsError = true;
+                    baseResponse.ErrorMessage = "Error! Edition announcement is not found!";
+                    return baseResponse;
                 }
                 editAnn.Title = editAnnouncement.Title;
                 editAnn.Description = editAnnouncement.Description;
@@ -137,7 +143,9 @@ namespace AnnouncementWebApi.Services.Implementations
                 var delAnnouncement = _myDbContext.Announcements.SingleOrDefault(a => a.Id == id);
                 if (delAnnouncement.Id != id)
                 {
-                    throw new NullReferenceException();
+                    baseResponse.IsError = true;
+                    baseResponse.ErrorMessage = "Error! Announcement is not found!";
+                    return baseResponse;
                 } 
                 _myDbContext.Announcements.Remove(delAnnouncement);
                 baseResponse.Response = $"Successful! Announcement with id={id} was deleted!";
@@ -160,7 +168,9 @@ namespace AnnouncementWebApi.Services.Implementations
                 var announcementsList = await _myDbContext.Announcements.Where(a => a.Title.Contains("announcement")).Take(3).ToListAsync();
                 if (announcementsList.Count == 0)
                 {
-                    throw new NullReferenceException();
+                    baseResponse.IsError = true;
+                    baseResponse.ErrorMessage = "Error! There are not such announcements";
+                    return baseResponse;
                 }
                 var responceList = new List<AnnouncementResponse>();
                 foreach (var item in announcementsList)
