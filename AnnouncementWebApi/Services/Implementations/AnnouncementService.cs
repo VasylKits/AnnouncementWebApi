@@ -18,7 +18,7 @@ namespace AnnouncementWebApi.Services.Implementations
             _myDbContext = myDbContext;
         }
 
-        public async Task<BaseResponse<List<AnnouncementResponse>>> GetAnnouncementsAsync()
+        public async Task<IBaseResponse<List<AnnouncementResponse>>> GetAnnouncementsAsync()
         {
             var baseResponse = new BaseResponse<List<AnnouncementResponse>>();
             try
@@ -27,8 +27,7 @@ namespace AnnouncementWebApi.Services.Implementations
                 var announcementList = await _myDbContext.Announcements.ToListAsync();
                 if (announcementList.Count == 0)
                 {
-                    baseResponse.IsError = true;
-                    baseResponse.ErrorMessage = "Announcements list in empty";
+                    throw new NullReferenceException();
                 }
 
                 foreach (var announcement in announcementList)
@@ -38,6 +37,7 @@ namespace AnnouncementWebApi.Services.Implementations
                 }
 
                 baseResponse.Response = responseAnnouncementList;
+                baseResponse.ErrorMessage = "Request completed!";
             }
 
             catch (Exception ex)
@@ -48,7 +48,7 @@ namespace AnnouncementWebApi.Services.Implementations
             return baseResponse;
         }
 
-        public async Task<BaseResponse<AnnouncementResponse>> GetByIdAsync(int id)
+        public async Task<IBaseResponse<AnnouncementResponse>> GetByIdAsync(int id)
         {
             var baseResponse = new BaseResponse<AnnouncementResponse>();
             var announcementResponse = new AnnouncementResponse();
@@ -57,8 +57,7 @@ namespace AnnouncementWebApi.Services.Implementations
                 var announcement = await _myDbContext.Announcements.FindAsync(id);
                 if (announcement == null)
                 {
-                    baseResponse.IsError = true;
-                    baseResponse.ErrorMessage = $"Announcement id = {announcement.Id} not found";
+                    throw new NullReferenceException();
                 }
                 announcementResponse.Id = announcement.Id;
                 announcementResponse.Title = announcement.Title;
@@ -66,6 +65,7 @@ namespace AnnouncementWebApi.Services.Implementations
                 announcementResponse.CreatedDate = announcement.CreatedDate;
 
                 baseResponse.Response = announcementResponse;
+                baseResponse.ErrorMessage = "Request completed!";
             }
             catch (Exception ex)
             {
@@ -75,7 +75,7 @@ namespace AnnouncementWebApi.Services.Implementations
             return baseResponse;
         }
 
-        public async Task<BaseResponse<AnnouncementResponse>> AddAnnouncementAsync(NewAnnouncement newAnnouncement)
+        public async Task<IBaseResponse<AnnouncementResponse>> AddAnnouncementAsync(NewAnnouncement newAnnouncement)
         {
             var baseResponse = new BaseResponse<AnnouncementResponse>();
             var announcementResponse = new AnnouncementResponse();
@@ -85,18 +85,18 @@ namespace AnnouncementWebApi.Services.Implementations
             {
                 await _myDbContext.SaveChangesAsync();
                 announcementResponse = new AnnouncementResponse() { Id = newAnn.Id, Title = newAnn.Title, Description = newAnn.Description, CreatedDate = newAnn.CreatedDate };
+                baseResponse.Response = announcementResponse;
+                baseResponse.ErrorMessage = "Request completed!";
             }
             catch (Exception ex)
             {
                 baseResponse.IsError = true;
                 baseResponse.ErrorMessage = $"[AddAnnouncementAsync] : {ex.Message}";
             }
-            
-            baseResponse.Response = announcementResponse;
             return baseResponse;
         }
 
-        public async Task<BaseResponse<AnnouncementResponse>> EditAnnouncementAsync(EditAnnouncement editAnnouncement)
+        public async Task<IBaseResponse<AnnouncementResponse>> EditAnnouncementAsync(EditAnnouncement editAnnouncement)
         {
             var baseResponse = new BaseResponse<AnnouncementResponse>();
             try
@@ -105,8 +105,7 @@ namespace AnnouncementWebApi.Services.Implementations
                 AnnouncementResponse announcementResponse = new();
                 if (editAnn == null)
                 {
-                    baseResponse.IsError = true;
-                    baseResponse.ErrorMessage = $"Announcement id = {editAnn.Id} not found!";
+                    throw new NullReferenceException();
                 }
                 editAnn.Title = editAnnouncement.Title;
                 editAnn.Description = editAnnouncement.Description;
@@ -120,6 +119,7 @@ namespace AnnouncementWebApi.Services.Implementations
                 announcementResponse.CreatedDate = editAnn.CreatedDate;
 
                 baseResponse.Response = announcementResponse;
+                baseResponse.ErrorMessage = "Request completed!";
             }
             catch (Exception ex)
             {
@@ -129,7 +129,7 @@ namespace AnnouncementWebApi.Services.Implementations
             return baseResponse;
         }
 
-        public async Task<BaseResponse<string>> DeleteAnnouncementAsync(int id)
+        public async Task<IBaseResponse<string>> DeleteAnnouncementAsync(int id)
         {
             var baseResponse = new BaseResponse<string>();
             try
@@ -137,11 +137,11 @@ namespace AnnouncementWebApi.Services.Implementations
                 var delAnnouncement = _myDbContext.Announcements.SingleOrDefault(a => a.Id == id);
                 if (delAnnouncement.Id != id)
                 {
-                    baseResponse.IsError = true;
-                    baseResponse.ErrorMessage = $"Announcement id = {delAnnouncement.Id} not found!";
-                }
+                    throw new NullReferenceException();
+                } 
                 _myDbContext.Announcements.Remove(delAnnouncement);
                 baseResponse.Response = $"Successful! Announcement with id={id} was deleted!";
+                baseResponse.ErrorMessage = "Request completed!";
                 await _myDbContext.SaveChangesAsync();
             }
             catch (Exception ex)
@@ -152,24 +152,24 @@ namespace AnnouncementWebApi.Services.Implementations
             return baseResponse;
         }
 
-        public async Task<BaseResponse<List<AnnouncementResponse>>> ShowTopThreeAnnouncementsAsync()
+        public async Task<IBaseResponse<List<AnnouncementResponse>>> ShowTopThreeAnnouncementsAsync()
         {
             var baseResponse = new BaseResponse<List<AnnouncementResponse>>();
             try
             {
-                var announcementList = await _myDbContext.Announcements.Where(a => a.Title.Contains("announcement")).OrderBy(a => a.Id).Take(3).ToListAsync();
-                if (!announcementList.Any())
+                var announcementsList = await _myDbContext.Announcements.Where(a => a.Title.Contains("announcement")).Take(3).ToListAsync();
+                if (announcementsList.Count == 0)
                 {
-                    baseResponse.IsError = true;
-                    baseResponse.ErrorMessage = "No records in database!";
+                    throw new NullReferenceException();
                 }
                 var responceList = new List<AnnouncementResponse>();
-                foreach (var item in announcementList)
+                foreach (var item in announcementsList)
                 {
                     var announcementResponse = new AnnouncementResponse() { Id = item.Id, Title = item.Title, Description = item.Description, CreatedDate = item.CreatedDate };
                     responceList.Add(announcementResponse);
                 }
                 baseResponse.Response = responceList;
+                baseResponse.ErrorMessage = "Request completed!";
             }
             catch (Exception ex)
             {

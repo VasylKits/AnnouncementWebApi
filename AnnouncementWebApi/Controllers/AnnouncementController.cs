@@ -36,7 +36,7 @@ namespace AnnouncementWebApi.Controllers
         }
 
         [HttpPut]
-        public async Task<IActionResult> EditAnnouncementAsync(EditAnnouncement editAnnouncement)
+        public async Task<IActionResult> EditAnnouncementAsync([FromBody] EditAnnouncement editAnnouncement)
         {
             return Ok(await _announcementService.EditAnnouncementAsync(editAnnouncement));
         }
