@@ -146,7 +146,7 @@ namespace AnnouncementWebApi.Services.Implementations
                     baseResponse.IsError = true;
                     baseResponse.ErrorMessage = "Error! Announcement is not found!";
                     return baseResponse;
-                } 
+                }
                 _myDbContext.Announcements.Remove(delAnnouncement);
                 baseResponse.Response = $"Successful! Announcement with id={id} was deleted!";
                 baseResponse.ErrorMessage = "Request completed!";
@@ -162,18 +162,45 @@ namespace AnnouncementWebApi.Services.Implementations
 
         public async Task<IBaseResponse<List<AnnouncementResponse>>> ShowTopThreeAnnouncementsAsync()
         {
+            int count = 0;
             var baseResponse = new BaseResponse<List<AnnouncementResponse>>();
+            var compareAnnouncementList = new List<CompareAnnouncement>();
+            var responceList = new List<AnnouncementResponse>();
+            var returnAnnouncementList = new List<Announcement>();
+            
             try
             {
-                var announcementsList = await _myDbContext.Announcements.Where(a => a.Title.Contains("announcement")).Take(3).ToListAsync();
-                if (announcementsList.Count == 0)
+                var announcementList = await _myDbContext.Announcements.ToDictionaryAsync(x => ++count, x => x);
+
+                if (announcementList.Count == 0)
                 {
                     baseResponse.IsError = true;
                     baseResponse.ErrorMessage = "Error! There are not such announcements";
                     return baseResponse;
                 }
-                var responceList = new List<AnnouncementResponse>();
-                foreach (var item in announcementsList)
+
+                for (int i = 1; i <= announcementList.Count; i++)
+                {
+                    var toCompare = $"{announcementList[i].Title} {announcementList[i].Description}".Split('.', ',', ' ', '?');
+
+                    for (int j = i + 1; j <= announcementList.Count; j++)
+                    {
+                        var toCompareNext = $"{announcementList[j].Title} {announcementList[j].Description}".Split('.', ',', ' ', '?');
+                        var wordCount = toCompare.Count(x => toCompareNext.Contains(x));
+                        compareAnnouncementList.Add(new CompareAnnouncement { First = announcementList[i], Second = announcementList[j], WordCount = wordCount });
+                    }
+                }
+
+                var sortList = compareAnnouncementList.OrderByDescending(x => x.WordCount).Take(3);
+               
+                foreach (var item in sortList)
+                {
+                    returnAnnouncementList.Add(item.First);
+                    returnAnnouncementList.Add(item.Second);                    
+                }
+                var returnAnnnouncement = returnAnnouncementList.Distinct().ToList();
+
+                foreach (var item in returnAnnnouncement)
                 {
                     var announcementResponse = new AnnouncementResponse() { Id = item.Id, Title = item.Title, Description = item.Description, CreatedDate = item.CreatedDate };
                     responceList.Add(announcementResponse);
