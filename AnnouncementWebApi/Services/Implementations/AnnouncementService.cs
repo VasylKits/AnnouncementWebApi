@@ -31,14 +31,17 @@ namespace AnnouncementWebApi.Services.Implementations
                     baseResponse.ErrorMessage = "Error! Database is empty";
                     return baseResponse;
                 }
+
                 foreach (var announcement in announcementList)
                 {
                     var announcementResponse = new AnnouncementResponse() { Id = announcement.Id, Title = announcement.Title, Description = announcement.Description, CreatedDate = announcement.CreatedDate };
                     responseAnnouncementList.Add(announcementResponse);
                 }
+
                 baseResponse.Response = responseAnnouncementList;
                 baseResponse.ErrorMessage = "Request completed!";
             }
+
             catch (Exception ex)
             {
                 baseResponse.IsError = true;
@@ -64,6 +67,7 @@ namespace AnnouncementWebApi.Services.Implementations
                 announcementResponse.Title = announcement.Title;
                 announcementResponse.Description = announcement.Description;
                 announcementResponse.CreatedDate = announcement.CreatedDate;
+
                 baseResponse.Response = announcementResponse;
                 baseResponse.ErrorMessage = "Request completed!";
             }
@@ -83,8 +87,7 @@ namespace AnnouncementWebApi.Services.Implementations
             _myDbContext.Announcements.Add(newAnn);
             try
             {
-                var saveStatus = await _myDbContext.SaveChangesAsync();
-                if (saveStatus == 1)
+                await _myDbContext.SaveChangesAsync();
                 announcementResponse = new AnnouncementResponse() { Id = newAnn.Id, Title = newAnn.Title, Description = newAnn.Description, CreatedDate = newAnn.CreatedDate };
                 baseResponse.Response = announcementResponse;
                 baseResponse.ErrorMessage = "Request completed!";
@@ -113,11 +116,14 @@ namespace AnnouncementWebApi.Services.Implementations
                 editAnn.Title = editAnnouncement.Title;
                 editAnn.Description = editAnnouncement.Description;
                 editAnn.EditDate = DateTime.Now;
+
                 await _myDbContext.SaveChangesAsync();
+
                 announcementResponse.Id = editAnn.Id;
                 announcementResponse.Title = editAnn.Title;
                 announcementResponse.Description = editAnn.Description;
                 announcementResponse.CreatedDate = editAnn.CreatedDate;
+
                 baseResponse.Response = announcementResponse;
                 baseResponse.ErrorMessage = "Request completed!";
             }
@@ -160,7 +166,8 @@ namespace AnnouncementWebApi.Services.Implementations
             var baseResponse = new BaseResponse<List<AnnouncementResponse>>();
             var compareAnnouncementList = new List<CompareAnnouncement>();
             var responceList = new List<AnnouncementResponse>();
-            var returnAnnouncementList = new List<Announcement>();            
+            var returnAnnouncementList = new List<Announcement>();
+            
             try
             {
                 var announcementList = await _myDbContext.Announcements.ToDictionaryAsync(x => ++count, x => x);
@@ -171,6 +178,7 @@ namespace AnnouncementWebApi.Services.Implementations
                     baseResponse.ErrorMessage = "Error! There are not such announcements";
                     return baseResponse;
                 }
+
                 for (int i = 1; i <= announcementList.Count; i++)
                 {
                     var toCompare = $"{announcementList[i].Title} {announcementList[i].Description}".Split('.', ',', ' ', '?');
@@ -179,15 +187,16 @@ namespace AnnouncementWebApi.Services.Implementations
                     {
                         var toCompareNext = $"{announcementList[j].Title} {announcementList[j].Description}".Split('.', ',', ' ', '?');
                         var wordCount = toCompare.Count(x => toCompareNext.Contains(x));
-                        if(wordCount > 0)
                         compareAnnouncementList.Add(new CompareAnnouncement { First = announcementList[i], Second = announcementList[j], WordCount = wordCount });
                     }
                 }
-                var sortList = compareAnnouncementList.OrderByDescending(x => x.WordCount).Take(3);               
+
+                var sortList = compareAnnouncementList.OrderByDescending(x => x.WordCount).Take(3);
+               
                 foreach (var item in sortList)
                 {
                     returnAnnouncementList.Add(item.First);
-                    returnAnnouncementList.Add(item.Second);      
+                    returnAnnouncementList.Add(item.Second);                    
                 }
                 var returnAnnnouncement = returnAnnouncementList.Distinct().ToList();
 
