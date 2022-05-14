@@ -31,6 +31,7 @@ namespace AnnouncementWebApi.Services.Implementations
                     baseResponse.ErrorMessage = "Error! Database is empty";
                     return baseResponse;
                 }
+
                 foreach (var announcement in announcementList)
                 {
                     var announcementResponse = new AnnouncementResponse() { Id = announcement.Id, Title = announcement.Title, Description = announcement.Description, CreatedDate = announcement.CreatedDate };
@@ -39,6 +40,7 @@ namespace AnnouncementWebApi.Services.Implementations
                 baseResponse.Response = responseAnnouncementList;
                 baseResponse.ErrorMessage = "Request completed!";
             }
+
             catch (Exception ex)
             {
                 baseResponse.IsError = true;
@@ -51,6 +53,7 @@ namespace AnnouncementWebApi.Services.Implementations
         {
             var baseResponse = new BaseResponse<AnnouncementResponse>();
             var announcementResponse = new AnnouncementResponse();
+
             try
             {
                 var announcement = await _myDbContext.Announcements.FindAsync(id);
@@ -60,13 +63,16 @@ namespace AnnouncementWebApi.Services.Implementations
                     baseResponse.ErrorMessage = "Error! Announcement is not found!";
                     return baseResponse;
                 }
+
                 announcementResponse.Id = announcement.Id;
                 announcementResponse.Title = announcement.Title;
                 announcementResponse.Description = announcement.Description;
                 announcementResponse.CreatedDate = announcement.CreatedDate;
+
                 baseResponse.Response = announcementResponse;
                 baseResponse.ErrorMessage = "Request completed!";
             }
+
             catch (Exception ex)
             {
                 baseResponse.IsError = true;
@@ -79,8 +85,10 @@ namespace AnnouncementWebApi.Services.Implementations
         {
             var baseResponse = new BaseResponse<AnnouncementResponse>();
             var announcementResponse = new AnnouncementResponse();
+
             Announcement newAnn = new() { Title = newAnnouncement.Title, Description = newAnnouncement.Description };
             _myDbContext.Announcements.Add(newAnn);
+
             try
             {
                 var saveStatus = await _myDbContext.SaveChangesAsync();
@@ -89,6 +97,7 @@ namespace AnnouncementWebApi.Services.Implementations
                 baseResponse.Response = announcementResponse;
                 baseResponse.ErrorMessage = "Request completed!";
             }
+
             catch (Exception ex)
             {
                 baseResponse.IsError = true;
@@ -100,27 +109,34 @@ namespace AnnouncementWebApi.Services.Implementations
         public async Task<IBaseResponse<AnnouncementResponse>> EditAnnouncementAsync(EditAnnouncement editAnnouncement)
         {
             var baseResponse = new BaseResponse<AnnouncementResponse>();
+
             try
             {
                 var editAnn = await _myDbContext.Announcements.SingleOrDefaultAsync(a => a.Id == editAnnouncement.Id);
                 AnnouncementResponse announcementResponse = new();
+
                 if (editAnn == null)
                 {
                     baseResponse.IsError = true;
                     baseResponse.ErrorMessage = "Error! Edition announcement is not found!";
                     return baseResponse;
                 }
+
                 editAnn.Title = editAnnouncement.Title;
                 editAnn.Description = editAnnouncement.Description;
                 editAnn.EditDate = DateTime.Now;
+
                 await _myDbContext.SaveChangesAsync();
+
                 announcementResponse.Id = editAnn.Id;
                 announcementResponse.Title = editAnn.Title;
                 announcementResponse.Description = editAnn.Description;
                 announcementResponse.CreatedDate = editAnn.CreatedDate;
+
                 baseResponse.Response = announcementResponse;
                 baseResponse.ErrorMessage = "Request completed!";
             }
+
             catch (Exception ex)
             {
                 baseResponse.IsError = true;
@@ -141,11 +157,13 @@ namespace AnnouncementWebApi.Services.Implementations
                     baseResponse.ErrorMessage = "Error! Announcement is not found!";
                     return baseResponse;
                 }
+
                 _myDbContext.Announcements.Remove(delAnnouncement);
                 baseResponse.Response = $"Successful! Announcement with id={id} was deleted!";
                 baseResponse.ErrorMessage = "Request completed!";
                 await _myDbContext.SaveChangesAsync();
             }
+
             catch (Exception ex)
             {
                 baseResponse.IsError = true;
@@ -160,7 +178,8 @@ namespace AnnouncementWebApi.Services.Implementations
             var baseResponse = new BaseResponse<List<AnnouncementResponse>>();
             var compareAnnouncementList = new List<CompareAnnouncement>();
             var responceList = new List<AnnouncementResponse>();
-            var returnAnnouncementList = new List<Announcement>();            
+            var returnAnnouncementList = new List<Announcement>();         
+            
             try
             {
                 var announcementList = await _myDbContext.Announcements.ToDictionaryAsync(x => ++count, x => x);
@@ -170,6 +189,7 @@ namespace AnnouncementWebApi.Services.Implementations
                     baseResponse.ErrorMessage = "Error! There are not such announcements";
                     return baseResponse;
                 }
+
                 for (int i = 1; i <= announcementList.Count; i++)
                 {
                     var toCompare = $"{announcementList[i].Title} {announcementList[i].Description}".Split('.', ',', ' ', '?');
@@ -181,13 +201,17 @@ namespace AnnouncementWebApi.Services.Implementations
                         compareAnnouncementList.Add(new CompareAnnouncement { First = announcementList[i], Second = announcementList[j], WordCount = wordCount });
                     }
                 }
-                var sortList = compareAnnouncementList.OrderByDescending(x => x.WordCount).Take(3);               
+
+                var sortList = compareAnnouncementList.OrderByDescending(x => x.WordCount).Take(3);     
+                
                 foreach (var item in sortList)
                 {
                     returnAnnouncementList.Add(item.First);
                     returnAnnouncementList.Add(item.Second);                    
                 }
+
                 var returnAnnnouncement = returnAnnouncementList.Distinct().ToList();
+
                 foreach (var item in returnAnnnouncement)
                 {
                     var announcementResponse = new AnnouncementResponse() { Id = item.Id, Title = item.Title, Description = item.Description, CreatedDate = item.CreatedDate };
@@ -196,6 +220,7 @@ namespace AnnouncementWebApi.Services.Implementations
                 baseResponse.Response = responceList;
                 baseResponse.ErrorMessage = "Request completed!";
             }
+
             catch (Exception ex)
             {
                 baseResponse.IsError = true;
