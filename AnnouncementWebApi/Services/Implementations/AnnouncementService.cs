@@ -102,43 +102,37 @@ namespace AnnouncementWebApi.Services.Implementations
             }
         }
 
-        public async Task<IBaseResponse<AnnouncementResponse>> EditAnnouncementAsync(EditAnnouncement editAnnouncement)
+        public async Task<IBaseResponse<AnnouncementResponse>> EditAnnouncementAsync(EditAnnouncement request)
         {
-            var baseResponse = new BaseResponse<AnnouncementResponse>();
-
             try
             {
-                var editAnn = await _myDbContext.Announcements.SingleOrDefaultAsync(a => a.Id == editAnnouncement.Id);
-                AnnouncementResponse announcementResponse = new();
+                var editAnnouncement = await _myDbContext.Announcements.SingleOrDefaultAsync(a => a.Id == request.Id);
 
-                if (editAnn == null)
+                if (editAnnouncement == null)
                 {
-                    baseResponse.IsError = true;
-                    baseResponse.ErrorMessage = "Error! Edition announcement is not found!";
-                    return baseResponse;
+                    return new BaseResponse<AnnouncementResponse>()
+                    {
+                        IsError = true,
+                        ErrorMessage = "Error! Edition announcement is not found!"
+                    };
                 }
 
-                editAnn.Title = editAnnouncement.Title;
-                editAnn.Description = editAnnouncement.Description;
-                editAnn.EditDate = DateTime.Now;
+                editAnnouncement.Title = request.Title;
+                editAnnouncement.Description = request.Description;
+                editAnnouncement.EditDate = DateTime.Now;
 
                 await _myDbContext.SaveChangesAsync();
-
-                announcementResponse.Id = editAnn.Id;
-                announcementResponse.Title = editAnn.Title;
-                announcementResponse.Description = editAnn.Description;
-                announcementResponse.CreatedDate = editAnn.CreatedDate;
-
-                baseResponse.Response = announcementResponse;
-                baseResponse.ErrorMessage = "Request completed!";
+                return await GetByIdAsync(editAnnouncement.Id);
             }
 
             catch (Exception ex)
             {
-                baseResponse.IsError = true;
-                baseResponse.ErrorMessage = $"[EditAnnouncementAsync] : {ex.Message}";
+                return new BaseResponse<AnnouncementResponse>()
+                {
+                    IsError = true,
+                    ErrorMessage = $"[EditAnnouncementAsync] : {ex.Message}"
+                };
             }
-            return baseResponse;
         }
 
         public async Task<IBaseResponse<string>> DeleteAnnouncementAsync(int id)
