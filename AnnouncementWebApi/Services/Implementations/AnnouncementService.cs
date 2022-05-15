@@ -81,29 +81,25 @@ namespace AnnouncementWebApi.Services.Implementations
             return baseResponse;
         }
 
-        public async Task<IBaseResponse<AnnouncementResponse>> AddAnnouncementAsync(NewAnnouncement newAnnouncement)
+        public async Task<IBaseResponse<AnnouncementResponse>> AddAnnouncementAsync(NewAnnouncement request)
         {
-            var baseResponse = new BaseResponse<AnnouncementResponse>();
-            var announcementResponse = new AnnouncementResponse();
-
-            Announcement newAnn = new() { Title = newAnnouncement.Title, Description = newAnnouncement.Description };
-            _myDbContext.Announcements.Add(newAnn);
-
             try
             {
-                var saveStatus = await _myDbContext.SaveChangesAsync();
-                if(saveStatus == 1)
-                announcementResponse = new AnnouncementResponse() { Id = newAnn.Id, Title = newAnn.Title, Description = newAnn.Description, CreatedDate = newAnn.CreatedDate };
-                baseResponse.Response = announcementResponse;
-                baseResponse.ErrorMessage = "Request completed!";
-            }
+                var newAnnouncement = new Announcement { Title = request.Title, Description = request.Description };
 
+                _myDbContext.Announcements.Add(newAnnouncement);
+                await _myDbContext.SaveChangesAsync();
+
+                return await GetByIdAsync(newAnnouncement.Id);
+            }
             catch (Exception ex)
             {
-                baseResponse.IsError = true;
-                baseResponse.ErrorMessage = $"[AddAnnouncementAsync] : {ex.Message}";
+                return new BaseResponse<AnnouncementResponse>()
+                {
+                    IsError = true,
+                    ErrorMessage = $"[AddAnnouncementAsync] : {ex.Message}"
+                };
             }
-            return baseResponse;
         }
 
         public async Task<IBaseResponse<AnnouncementResponse>> EditAnnouncementAsync(EditAnnouncement editAnnouncement)
@@ -178,8 +174,8 @@ namespace AnnouncementWebApi.Services.Implementations
             var baseResponse = new BaseResponse<List<AnnouncementResponse>>();
             var compareAnnouncementList = new List<CompareAnnouncement>();
             var responceList = new List<AnnouncementResponse>();
-            var returnAnnouncementList = new List<Announcement>();         
-            
+            var returnAnnouncementList = new List<Announcement>();
+
             try
             {
                 var announcementList = await _myDbContext.Announcements.ToDictionaryAsync(x => ++count, x => x);
@@ -197,17 +193,17 @@ namespace AnnouncementWebApi.Services.Implementations
                     {
                         var toCompareNext = $"{announcementList[j].Title} {announcementList[j].Description}".Split('.', ',', ' ', '?');
                         var wordCount = toCompare.Count(x => toCompareNext.Contains(x));
-                        if(wordCount > 0)
-                        compareAnnouncementList.Add(new CompareAnnouncement { First = announcementList[i], Second = announcementList[j], WordCount = wordCount });
+                        if (wordCount > 0)
+                            compareAnnouncementList.Add(new CompareAnnouncement { First = announcementList[i], Second = announcementList[j], WordCount = wordCount });
                     }
                 }
 
-                var sortList = compareAnnouncementList.OrderByDescending(x => x.WordCount).Take(3);     
-                
+                var sortList = compareAnnouncementList.OrderByDescending(x => x.WordCount).Take(3);
+
                 foreach (var item in sortList)
                 {
                     returnAnnouncementList.Add(item.First);
-                    returnAnnouncementList.Add(item.Second);                    
+                    returnAnnouncementList.Add(item.Second);
                 }
 
                 var returnAnnnouncement = returnAnnouncementList.Distinct().ToList();
