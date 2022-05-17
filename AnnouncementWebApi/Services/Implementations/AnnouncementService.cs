@@ -20,33 +20,40 @@ namespace AnnouncementWebApi.Services.Implementations
 
         public async Task<IBaseResponse<List<AnnouncementResponse>>> GetAnnouncementsAsync()
         {
-            var baseResponse = new BaseResponse<List<AnnouncementResponse>>();
             try
             {
-                var responseAnnouncementList = new List<AnnouncementResponse>();
                 var announcementList = await _myDbContext.Announcements.ToListAsync();
+
                 if (announcementList.Count == 0)
-                {
-                    baseResponse.IsError = true;
-                    baseResponse.ErrorMessage = "Error! Database is empty";
-                    return baseResponse;
-                }
+                    return new BaseResponse<List<AnnouncementResponse>>
+                    {
+                        IsError = true,
+                        ErrorMessage = "Error! Database is empty"
+                    };
+
+                var responseAnnouncementList = new List<AnnouncementResponse>();
 
                 foreach (var announcement in announcementList)
                 {
                     var announcementResponse = new AnnouncementResponse() { Id = announcement.Id, Title = announcement.Title, Description = announcement.Description, CreatedDate = announcement.CreatedDate };
                     responseAnnouncementList.Add(announcementResponse);
                 }
-                baseResponse.Response = responseAnnouncementList;
-                baseResponse.ErrorMessage = "Request completed!";
+
+                return new BaseResponse<List<AnnouncementResponse>>
+                {
+                    Response = responseAnnouncementList,
+                    ErrorMessage = "Request completed!"
+                };
             }
 
             catch (Exception ex)
             {
-                baseResponse.IsError = true;
-                baseResponse.ErrorMessage = $"[GetAnnouncementAsync] : {ex.Message}";
+                return new BaseResponse<List<AnnouncementResponse>>
+                {
+                    IsError = true,
+                    ErrorMessage = $"[GetAnnouncementAsync] : {ex.Message}"
+                };
             }
-            return baseResponse;
         }
 
         public async Task<IBaseResponse<AnnouncementResponse>> GetByIdAsync(int id)
@@ -71,7 +78,11 @@ namespace AnnouncementWebApi.Services.Implementations
             }
             catch (Exception ex)
             {
-                return new BaseResponse<AnnouncementResponse>() { IsError = true, ErrorMessage = $"[GetByIdAsync] : {ex.Message}" };
+                return new BaseResponse<AnnouncementResponse>()
+                {
+                    IsError = true,
+                    ErrorMessage = $"[GetByIdAsync] : {ex.Message}"
+                };
             }
         }
 
@@ -102,7 +113,7 @@ namespace AnnouncementWebApi.Services.Implementations
             {
                 var editAnnouncement = await _myDbContext.Announcements.SingleOrDefaultAsync(a => a.Id == request.Id);
 
-                if (editAnnouncement == null)
+                if (editAnnouncement is null)
                 {
                     return new BaseResponse<AnnouncementResponse>()
                     {
@@ -131,29 +142,37 @@ namespace AnnouncementWebApi.Services.Implementations
 
         public async Task<IBaseResponse<string>> DeleteAnnouncementAsync(int id)
         {
-            var baseResponse = new BaseResponse<string>();
             try
             {
                 var delAnnouncement = _myDbContext.Announcements.SingleOrDefault(a => a.Id == id);
+
                 if (delAnnouncement.Id != id)
                 {
-                    baseResponse.IsError = true;
-                    baseResponse.ErrorMessage = "Error! Announcement is not found!";
-                    return baseResponse;
+                    return new BaseResponse<string>()
+                    {
+                        IsError = true,
+                        ErrorMessage = "Error! Announcement is not found!"
+                    };
                 }
 
                 _myDbContext.Announcements.Remove(delAnnouncement);
-                baseResponse.Response = $"Successful! Announcement with id={id} was deleted!";
-                baseResponse.ErrorMessage = "Request completed!";
                 await _myDbContext.SaveChangesAsync();
+
+                return new BaseResponse<string>
+                {
+                    Response = $"Successful! Announcement with id={id} was deleted!",
+                    ErrorMessage = "Request completed!"
+                };
             }
 
             catch (Exception ex)
             {
-                baseResponse.IsError = true;
-                baseResponse.ErrorMessage = $"[DeleteAnnouncementAsync] : {ex.Message}";
+                return new BaseResponse<string>()
+                {
+                    IsError = true,
+                    ErrorMessage = $"[DeleteAnnouncementAsync] : {ex.Message}"
+                };
             }
-            return baseResponse;
         }
 
         public async Task<IBaseResponse<List<AnnouncementResponse>>> ShowTopThreeAnnouncementsAsync()
@@ -167,12 +186,9 @@ namespace AnnouncementWebApi.Services.Implementations
             try
             {
                 var announcementList = await _myDbContext.Announcements.ToDictionaryAsync(x => ++count, x => x);
+
                 if (announcementList.Count == 0)
-                {
-                    baseResponse.IsError = true;
-                    baseResponse.ErrorMessage = "Error! There are not such announcements";
-                    return baseResponse;
-                }
+                    return new BaseResponse<List<AnnouncementResponse>> { IsError = true, ErrorMessage = "Error! There are not such announcements" };
 
                 for (int i = 1; i <= announcementList.Count; i++)
                 {
@@ -207,8 +223,11 @@ namespace AnnouncementWebApi.Services.Implementations
 
             catch (Exception ex)
             {
-                baseResponse.IsError = true;
-                baseResponse.ErrorMessage = $"[ShowTopThreeAnnouncementsAsync] : {ex.Message}";
+                return new BaseResponse<List<AnnouncementResponse>>()
+                {
+                    IsError = true,
+                    ErrorMessage = $"[ShowTopThreeAnnouncementsAsync] : {ex.Message}"
+                };
             }
             return baseResponse;
         }
