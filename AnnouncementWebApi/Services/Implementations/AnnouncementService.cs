@@ -51,34 +51,28 @@ namespace AnnouncementWebApi.Services.Implementations
 
         public async Task<IBaseResponse<AnnouncementResponse>> GetByIdAsync(int id)
         {
-            var baseResponse = new BaseResponse<AnnouncementResponse>();
-            var announcementResponse = new AnnouncementResponse();
-
             try
             {
                 var announcement = await _myDbContext.Announcements.FindAsync(id);
-                if (announcement == null)
+                if (announcement is null)
+                    return new BaseResponse<AnnouncementResponse>() { IsError = true, ErrorMessage = "Error! Announcement is not found!" };
+
+                return new BaseResponse<AnnouncementResponse>()
                 {
-                    baseResponse.IsError = true;
-                    baseResponse.ErrorMessage = "Error! Announcement is not found!";
-                    return baseResponse;
-                }
-
-                announcementResponse.Id = announcement.Id;
-                announcementResponse.Title = announcement.Title;
-                announcementResponse.Description = announcement.Description;
-                announcementResponse.CreatedDate = announcement.CreatedDate;
-
-                baseResponse.Response = announcementResponse;
-                baseResponse.ErrorMessage = "Request completed!";
+                    Response = new AnnouncementResponse()
+                    {
+                        Id = announcement.Id,
+                        Title = announcement.Title,
+                        Description = announcement.Description,
+                        CreatedDate = announcement.CreatedDate
+                    },
+                    ErrorMessage = "Request completed!"
+                };
             }
-
             catch (Exception ex)
             {
-                baseResponse.IsError = true;
-                baseResponse.ErrorMessage = $"[GetByIdAsync] : {ex.Message}";
+                return new BaseResponse<AnnouncementResponse>() { IsError = true, ErrorMessage = $"[GetByIdAsync] : {ex.Message}" };
             }
-            return baseResponse;
         }
 
         public async Task<IBaseResponse<AnnouncementResponse>> AddAnnouncementAsync(NewAnnouncement request)
