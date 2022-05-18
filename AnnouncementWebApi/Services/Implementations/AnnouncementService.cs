@@ -188,7 +188,11 @@ namespace AnnouncementWebApi.Services.Implementations
                 var announcementList = await _myDbContext.Announcements.ToDictionaryAsync(x => ++count, x => x);
 
                 if (announcementList.Count == 0)
-                    return new BaseResponse<List<AnnouncementResponse>> { IsError = true, ErrorMessage = "Error! There are not such announcements" };
+                    return new BaseResponse<List<AnnouncementResponse>> 
+                    { 
+                        IsError = true,
+                        ErrorMessage = "Error! There are not such announcements" 
+                    };
 
                 for (int i = 1; i <= announcementList.Count; i++)
                 {
@@ -210,15 +214,18 @@ namespace AnnouncementWebApi.Services.Implementations
                     returnAnnouncementList.Add(item.Second);
                 }
 
-                var returnAnnnouncement = returnAnnouncementList.Distinct().ToList();
+                var returnAnnouncement = returnAnnouncementList.Distinct().ToList();
 
-                foreach (var item in returnAnnnouncement)
+                foreach (var item in returnAnnouncement)
                 {
                     var announcementResponse = new AnnouncementResponse() { Id = item.Id, Title = item.Title, Description = item.Description, CreatedDate = item.CreatedDate };
                     responceList.Add(announcementResponse);
                 }
-                baseResponse.Response = responceList;
-                baseResponse.ErrorMessage = "Request completed!";
+                return new BaseResponse<List<AnnouncementResponse>>
+                {
+                    Response = responceList,
+                    ErrorMessage = "Request completed!"
+                };
             }
 
             catch (Exception ex)
@@ -229,7 +236,6 @@ namespace AnnouncementWebApi.Services.Implementations
                     ErrorMessage = $"[ShowTopThreeAnnouncementsAsync] : {ex.Message}"
                 };
             }
-            return baseResponse;
         }
     }
 }
