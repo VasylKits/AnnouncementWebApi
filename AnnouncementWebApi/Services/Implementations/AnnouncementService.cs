@@ -187,7 +187,7 @@ namespace AnnouncementWebApi.Services.Implementations
             {
                 var announcementList = await _myDbContext.Announcements.ToDictionaryAsync(x => ++count, x => x);
 
-                if (announcementList.Count == 0)
+                if (announcementList.Count is 0)
                     return new BaseResponse<List<AnnouncementResponse>> 
                     { 
                         IsError = true,
