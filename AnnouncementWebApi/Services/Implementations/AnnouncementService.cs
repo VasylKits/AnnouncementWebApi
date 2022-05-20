@@ -35,8 +35,13 @@ namespace AnnouncementWebApi.Services.Implementations
 
                 foreach (var announcement in announcementList)
                 {
-                    var announcementResponse = new AnnouncementResponse() { Id = announcement.Id, Title = announcement.Title, Description = announcement.Description, CreatedDate = announcement.CreatedDate };
-                    responseAnnouncementList.Add(announcementResponse);
+                    responseAnnouncementList.Add(new AnnouncementResponse()
+                    {
+                        Id = announcement.Id,
+                        Title = announcement.Title,
+                        Description = announcement.Description,
+                        CreatedDate = announcement.CreatedDate
+                    });
                 }
 
                 return new BaseResponse<List<AnnouncementResponse>>
