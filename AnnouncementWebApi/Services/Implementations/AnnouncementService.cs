@@ -67,7 +67,11 @@ namespace AnnouncementWebApi.Services.Implementations
             {
                 var announcement = await _myDbContext.Announcements.FindAsync(id);
                 if (announcement is null)
-                    return new BaseResponse<AnnouncementResponse>() { IsError = true, ErrorMessage = "Error! Announcement is not found!" };
+                    return new BaseResponse<AnnouncementResponse>() 
+                    {
+                        IsError = true, 
+                        ErrorMessage = "Error! Announcement is not found!"
+                    };
 
                 return new BaseResponse<AnnouncementResponse>()
                 {
@@ -151,15 +155,6 @@ namespace AnnouncementWebApi.Services.Implementations
             {
                 var delAnnouncement = _myDbContext.Announcements.SingleOrDefault(a => a.Id == id);
 
-                if (delAnnouncement.Id != id)
-                {
-                    return new BaseResponse<string>()
-                    {
-                        IsError = true,
-                        ErrorMessage = "Error! Announcement is not found!"
-                    };
-                }
-
                 _myDbContext.Announcements.Remove(delAnnouncement);
                 await _myDbContext.SaveChangesAsync();
 
@@ -211,7 +206,7 @@ namespace AnnouncementWebApi.Services.Implementations
                     }
                 }
 
-                var sortList = compareAnnouncementList.OrderByDescending(x => x.WordCount).Take(3);
+                var sortList = compareAnnouncementList.OrderByDescending(x => x.WordCount);
 
                 foreach (var item in sortList)
                 {
@@ -219,7 +214,7 @@ namespace AnnouncementWebApi.Services.Implementations
                     returnAnnouncementList.Add(item.Second);
                 }
 
-                var returnAnnouncement = returnAnnouncementList.Distinct().ToList();
+                var returnAnnouncement = returnAnnouncementList.Distinct().Take(3).ToList();
 
                 foreach (var item in returnAnnouncement)
                 {
